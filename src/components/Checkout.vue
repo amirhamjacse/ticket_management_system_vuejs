@@ -190,9 +190,7 @@ export default {
     },
 
     proceedToPayment() {
-      alert('Redirecting to secure payment gateway...');
-      // In a real application, you would redirect to a payment gateway here
-      // this.$router.push({ name: 'Payment' });
+      this.$router.push({ name: 'Payment' });
     },
 
     goBack() {
