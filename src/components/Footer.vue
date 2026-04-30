@@ -29,10 +29,10 @@
         <div>
           <h4 class="mb-4 text-sm font-bold uppercase tracking-wider text-emerald-400">Support</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-sm text-slate-400 transition hover:text-emerald-400">Help Center</a></li>
-            <li><a href="#" class="text-sm text-slate-400 transition hover:text-emerald-400">Cancellation Policy</a></li>
+            <li><router-link to="/faqs" class="text-sm text-slate-400 transition hover:text-emerald-400">FAQs</router-link></li>
+            <li><router-link to="/policies" class="text-sm text-slate-400 transition hover:text-emerald-400">Cancellation Policy</router-link></li>
             <li><a href="#" class="text-sm text-slate-400 transition hover:text-emerald-400">Privacy Policy</a></li>
-            <li><a href="#" class="text-sm text-slate-400 transition hover:text-emerald-400">Terms of Service</a></li>
+            <li><router-link to="/terms" class="text-sm text-slate-400 transition hover:text-emerald-400">Terms of Service</router-link></li>
           </ul>
         </div>
 

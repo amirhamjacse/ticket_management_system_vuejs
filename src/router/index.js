@@ -7,6 +7,10 @@ import Profile from '../views/Profile.vue';
 import Dashboard from '../views/Dashboard.vue';
 import Settings from '../views/Settings.vue';
 import BookingDetails from '../views/BookingDetails.vue';
+import BookingConfirmation from '../views/BookingConfirmation.vue';
+import FAQs from '../views/FAQs.vue';
+import Terms from '../views/Terms.vue';
+import Policies from '../views/Policies.vue';
 import SeatSelect from '../components/SeatSelection.vue'
 import Checkout from '../components/Checkout.vue'
 import Payment from '../components/Payment.vue'
@@ -20,7 +24,11 @@ const routes = [
   { path: '/profile', name: 'Profile', component: Profile },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/booking-details/:id', name: 'BookingDetails', component: BookingDetails },
+  { path: '/booking-confirmation', name: 'BookingConfirmation', component: BookingConfirmation },
   { path: '/settings', name: 'Settings', component: Settings },
+  { path: '/faqs', name: 'FAQs', component: FAQs },
+  { path: '/terms', name: 'Terms', component: Terms },
+  { path: '/policies', name: 'Policies', component: Policies },
   { path: '/seatselect', name: 'SeatSelection', component: SeatSelect },
   { path: '/checkout', name: 'Checkout', component: Checkout },
   { path: '/payment', name: 'Payment', component: Payment },
