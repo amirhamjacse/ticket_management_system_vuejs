@@ -1,152 +1,180 @@
 <template>
-  <div class="container py-5">
-    <h2 class="text-center mb-4">Book Your Ticket</h2>
-
-    <!-- Search Form -->
-    <form @submit.prevent="searchBuses" class="mb-5">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="fromDestination" class="form-label">From</label>
-          <input
-            type="text"
-            id="fromDestination"
-            v-model="fromDestination"
-            class="form-control"
-            placeholder="Enter departure city"
-          />
-        </div>
-        <div class="col-md-6">
-          <label for="toDestination" class="form-label">To</label>
-          <input
-            type="text"
-            id="toDestination"
-            v-model="toDestination"
-            class="form-control"
-            placeholder="Enter destination city"
-          />
-        </div>
+  <div class="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <!-- Header Section -->
+    <section class="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-12">
+      <div class="mx-auto max-w-6xl">
+        <h1 class="text-3xl font-bold text-slate-900 md:text-4xl">Find Your Perfect Route</h1>
+        <p class="mt-2 text-slate-600">Search and compare routes with real-time availability</p>
       </div>
+    </section>
 
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="departureDate" class="form-label">Departure Date</label>
-          <input type="date" id="departureDate" v-model="departureDate" class="form-control" />
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <!-- Search Form -->
+      <form @submit.prevent="searchBuses" class="mb-8 rounded-2xl border border-emerald-100 bg-white p-6 shadow-soft md:p-8">
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <label for="fromDestination" class="mb-2 block text-sm font-semibold text-slate-700">From</label>
+            <input
+              type="text"
+              id="fromDestination"
+              v-model="fromDestination"
+              placeholder="Enter departure city"
+              class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+            />
+          </div>
+          <div>
+            <label for="toDestination" class="mb-2 block text-sm font-semibold text-slate-700">To</label>
+            <input
+              type="text"
+              id="toDestination"
+              v-model="toDestination"
+              placeholder="Enter destination city"
+              class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+            />
+          </div>
+          <div>
+            <label for="departureDate" class="mb-2 block text-sm font-semibold text-slate-700">Departure Date</label>
+            <input type="date" id="departureDate" v-model="departureDate" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+          </div>
+          <div>
+            <label for="returnDate" class="mb-2 block text-sm font-semibold text-slate-700">Return Date (Optional)</label>
+            <input type="date" id="returnDate" v-model="returnDate" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100" />
+          </div>
+          <div>
+            <label for="transportType" class="mb-2 block text-sm font-semibold text-slate-700">Choose Transport</label>
+            <select id="transportType" v-model="transportType" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100">
+              <option value="bus">Bus</option>
+              <option value="train">Train</option>
+              <option value="flight">Flight</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-3 font-semibold text-white shadow-soft transition hover:shadow-lg hover:from-emerald-700 hover:to-green-700 active:scale-95">
+              <i class="bi bi-search me-2"></i>Search Routes
+            </button>
+          </div>
         </div>
-        <div class="col-md-6">
-          <label for="returnDate" class="form-label">Return Date (Optional)</label>
-          <input type="date" id="returnDate" v-model="returnDate" class="form-control" />
-        </div>
-      </div>
+      </form>
 
-      <!-- Transport Type Dropdown -->
-      <div class="mb-3">
-        <label for="transportType" class="form-label">Choose Transport</label>
-        <select id="transportType" v-model="transportType" class="form-select">
-          <option value="bus">Bus</option>
-          <option value="train">Train</option>
-          <option value="flight">Flight</option>
-        </select>
-      </div>
+      <!-- Results Section -->
+      <div v-if="busList.length > 0" class="grid gap-6 lg:grid-cols-[280px_1fr]">
+        <!-- Filters Sidebar -->
+        <aside v-if="showFilter" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:sticky lg:top-20 h-fit">
+          <h3 class="flex items-center justify-between text-lg font-bold text-slate-900">
+            <span>Filters</span>
+            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-600">Active</span>
+          </h3>
 
-      <button type="submit" class="btn btn-primary btn-lg w-100">Search</button>
-    </form>
+          <div class="mt-6 space-y-5 border-t border-slate-200 pt-5">
+            <div>
+              <label for="priceFilter" class="mb-2 block text-sm font-semibold text-slate-700">Price</label>
+              <select id="priceFilter" v-model="priceFilter" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500">
+                <option value="all">All</option>
+                <option value="low">Low to High</option>
+                <option value="high">High to Low</option>
+              </select>
+            </div>
 
-    <!-- Results Section -->
-    <div v-if="busList.length > 0" class="d-flex">
-      <!-- Left Filter Section -->
-      <div v-if="showFilter" class="col-md-3 p-3 border-end">
-        <h5>Filters</h5>
+            <div>
+              <label for="seatFilter" class="mb-3 block text-sm font-semibold text-slate-700">Available Seats: {{ seatFilter }}</label>
+              <input id="seatFilter" v-model="seatFilter" type="range" min="0" max="50" class="w-full accent-emerald-600" />
+            </div>
 
-        <!-- Price Filter -->
-        <div class="mb-3">
-          <label for="priceFilter" class="form-label">Price</label>
-          <select id="priceFilter" v-model="priceFilter" class="form-select">
-            <option value="all">All</option>
-            <option value="low">Low to High</option>
-            <option value="high">High to Low</option>
-          </select>
-        </div>
+            <div>
+              <label for="acFilter" class="mb-2 block text-sm font-semibold text-slate-700">AC / Non-AC</label>
+              <select id="acFilter" v-model="acFilter" class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-500">
+                <option value="all">All</option>
+                <option value="ac">AC</option>
+                <option value="non-ac">Non-AC</option>
+              </select>
+            </div>
 
-        <!-- Available Seats Filter -->
-        <div class="mb-3">
-          <label for="seatFilter" class="form-label">Available Seats</label>
-          <input type="range" id="seatFilter" v-model="seatFilter" min="0" max="50" class="form-range" />
-          <span>{{ seatFilter }} Seats</span>
-        </div>
+            <div>
+              <label for="busNameFilter" class="mb-2 block text-sm font-semibold text-slate-700">Bus Name</label>
+              <input
+                type="text"
+                id="busNameFilter"
+                v-model="busNameFilter"
+                placeholder="Search bus name"
+                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500"
+              />
+            </div>
+          </div>
+        </aside>
 
-        <!-- AC / Non-AC Filter -->
-        <div class="mb-3">
-          <label for="acFilter" class="form-label">AC/Non-AC</label>
-          <select id="acFilter" v-model="acFilter" class="form-select">
-            <option value="all">All</option>
-            <option value="ac">AC</option>
-            <option value="non-ac">Non-AC</option>
-          </select>
-        </div>
+        <!-- Results Cards -->
+        <div>
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-slate-900">
+              Available {{ transportType.charAt(0).toUpperCase() + transportType.slice(1) }}s
+              <span class="ml-2 text-sm font-normal text-slate-600">({{ filteredBusList.length }} results)</span>
+            </h2>
+          </div>
 
-        <!-- Bus Name Filter -->
-        <div class="mb-3">
-          <label for="busNameFilter" class="form-label">Bus Name</label>
-          <input
-            type="text"
-            id="busNameFilter"
-            v-model="busNameFilter"
-            class="form-control"
-            placeholder="Enter bus name"
-          />
-        </div>
-      </div>
-
-      <!-- Results Section (Cards) -->
-      <div class="col-md-9">
-        <div class="filter-sort d-flex justify-content-between align-items-center mb-3">
-          <h5>Available {{ transportType.charAt(0).toUpperCase() + transportType.slice(1) }}s</h5>
-        </div>
-
-        <!-- Loop through available buses and show cards -->
-        <div class="bus-cards">
-          <div class="card bus-card" v-for="(bus, index) in filteredBusList" :key="index">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title">{{ bus.name }}</h5>
-                <span class="price">{{ "৳" + bus.price }}</span>
-              </div>
-              
-              <!-- From and To Locations -->
-              <div class="location-info mb-3">
-                <span class="from-to"><strong>From:</strong> {{ bus.from }}</span><br />
-                <span class="from-to"><strong>To:</strong> {{ bus.to }}</span>
-              </div>
-
-              <!-- <div class="d-flex justify-content-between align-items-center">
-                <p class="route">
-                  <i class="fas fa-route"></i> Route: {{ bus.route }}
-                </p>
-              </div> -->
-              
-              <p class="card-text">
-                <strong>Departure:</strong> {{ bus.departureTime }}<br />
-                <strong>Duration:</strong> {{ bus.duration }}<br />
-                <strong>Seats:</strong> {{ bus.availableSeats }} Seats Available
-              </p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <button class="btn btn-outline-secondary btn-sm">Cancellation Policy</button>
-                  <button class="btn btn-outline-secondary btn-sm">Boarding Point</button>
-                  <button class="btn btn-outline-secondary btn-sm">Dropping Point</button>
-                  <button class="btn btn-outline-secondary btn-sm">Amenities</button>
+          <div class="space-y-4">
+            <div v-for="(bus, index) in filteredBusList" :key="index" class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-emerald-300">
+              <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div class="flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="text-xl font-bold text-slate-900">{{ bus.name }}</h3>
+                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase text-emerald-700">{{ bus.ac }}</span>
+                  </div>
+                  <p class="mt-2 text-sm text-slate-600">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    <span class="font-medium">{{ bus.from }}</span> → <span class="font-medium">{{ bus.to }}</span>
+                  </p>
                 </div>
-                <button class="btn btn-success" @click="Bookbus">Book Now</button>
+                <div class="text-right md:whitespace-nowrap">
+                  <p class="text-3xl font-bold text-emerald-600">৳{{ bus.price }}</p>
+                  <p class="text-sm text-slate-500">{{ bus.availableSeats }} seats available</p>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-3 gap-3 rounded-lg bg-slate-50 p-4">
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-slate-500">Departure</p>
+                  <p class="mt-1 font-semibold text-slate-900">{{ bus.departureTime }}</p>
+                </div>
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-slate-500">Duration</p>
+                  <p class="mt-1 font-semibold text-slate-900">{{ bus.duration }}</p>
+                </div>
+                <div>
+                  <p class="text-xs uppercase tracking-wider text-slate-500">Seats Left</p>
+                  <p class="mt-1 font-semibold text-slate-900">{{ bus.availableSeats }}</p>
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-wrap gap-2">
+                  <button class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50">
+                    <i class="bi bi-ban me-1"></i>Cancellation Policy
+                  </button>
+                  <button class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50">
+                    <i class="bi bi-geo me-1"></i>Boarding Point
+                  </button>
+                  <button class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50">
+                    <i class="bi bi-flag me-1"></i>Dropping Point
+                  </button>
+                  <button class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50">
+                    <i class="bi bi-lightbulb me-1"></i>Amenities
+                  </button>
+                </div>
+                <button @click="Bookbus" class="rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-2.5 font-semibold text-white shadow-soft transition hover:shadow-lg hover:from-emerald-700 hover:to-green-700">
+                  <i class="bi bi-ticket me-1"></i>Book Now
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- No Results Message -->
-    <div v-else-if="searched && busList.length === 0" class="alert alert-warning mt-4" role="alert">
-      No {{ transportType.charAt(0).toUpperCase() + transportType.slice(1) }}s available for the selected route and date.
+      <!-- No Results Message -->
+      <div v-else-if="searched && busList.length === 0" class="rounded-2xl border border-yellow-200 bg-yellow-50 p-6 text-center">
+        <i class="bi bi-exclamation-triangle mb-3 text-2xl text-yellow-600"></i>
+        <h3 class="mt-2 text-lg font-semibold text-yellow-900">No {{ transportType.charAt(0).toUpperCase() + transportType.slice(1) }}s Found</h3>
+        <p class="mt-1 text-sm text-yellow-700">No {{ transportType }}s available for the selected route and date. Please try different dates or routes.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -174,22 +202,18 @@ export default {
     filteredBusList() {
       let filtered = this.busList;
 
-      // Filter by price
       if (this.priceFilter === "low") {
         filtered = filtered.sort((a, b) => parseInt(a.price) - parseInt(b.price));
       } else if (this.priceFilter === "high") {
         filtered = filtered.sort((a, b) => parseInt(b.price) - parseInt(a.price));
       }
 
-      // Filter by available seats
       filtered = filtered.filter(bus => bus.availableSeats >= this.seatFilter);
 
-      // Filter by AC/Non-AC
       if (this.acFilter !== "all") {
         filtered = filtered.filter(bus => bus.ac === this.acFilter);
       }
 
-      // Filter by bus name
       if (this.busNameFilter) {
         filtered = filtered.filter(bus => bus.name.toLowerCase().includes(this.busNameFilter.toLowerCase()));
       }
@@ -201,7 +225,6 @@ export default {
     searchBuses() {
       this.showFilter = true;
 
-      // Dummy data for buses
       if (this.transportType === "bus") {
         this.busList = [
           { id: 1, name: "Manik Express", departureTime: "01:00 PM", duration: "5h 0m", price: "800", availableSeats: 21, from: "Dhaka", to: "Chittagong", route: "Dhaka -> Chittagong", ac: "ac" },
@@ -214,83 +237,8 @@ export default {
       this.searched = true;
     },
     Bookbus() {
-      // Navigate to the checkout page
-      this.$router.push({ name: 'SeatSelection' });  // Assuming you have a Checkout route defined
+      this.$router.push({ name: 'SeatSelection' });
     },
   },
 };
 </script>
-
-<style scoped>
-.container {
-  font-family: Arial, sans-serif;
-}
-
-.filter-sort {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.bus-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-.bus-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.bus-card .card-body {
-  padding: 15px;
-}
-
-.card-title {
-  font-size: 1.2rem;
-}
-
-.price {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #28a745;
-}
-
-.location-info {
-  font-size: 1rem;
-}
-
-.route {
-  font-size: 0.9rem;
-  color: #6c757d;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.filter-sort,
-.card-footer {
-  font-size: 0.9rem;
-}
-
-.card-text {
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-}
-
-.btn-outline-secondary {
-  margin-right: 5px;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-}
-
-.btn-outline-secondary {
-  margin-right: 5px;
-}
-</style>
