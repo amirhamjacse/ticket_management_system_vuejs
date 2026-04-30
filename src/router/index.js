@@ -6,6 +6,7 @@ import Contact from '../views/Contact.vue';
 import Profile from '../views/Profile.vue';
 import Dashboard from '../views/Dashboard.vue';
 import Settings from '../views/Settings.vue';
+import BookingDetails from '../views/BookingDetails.vue';
 import SeatSelect from '../components/SeatSelection.vue'
 import Checkout from '../components/Checkout.vue'
 import Payment from '../components/Payment.vue'
@@ -18,6 +19,7 @@ const routes = [
   { path: '/contact', name: 'Contact', component: Contact },
   { path: '/profile', name: 'Profile', component: Profile },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/booking-details/:id', name: 'BookingDetails', component: BookingDetails },
   { path: '/settings', name: 'Settings', component: Settings },
   { path: '/seatselect', name: 'SeatSelection', component: SeatSelect },
   { path: '/checkout', name: 'Checkout', component: Checkout },
